@@ -48,7 +48,7 @@ app.post("/users", async (req, res) => {
 //login endpoint
 app.post("/users/login", async (req, res) => {
   const { email, password } = req.body;
-  //check ifn user exists in DB
+  //check if user exists in DB
   const user = users.find((u) => u.email === email);
   if (!user) {
     //return is essential to stop executing rest of the code
@@ -60,9 +60,8 @@ app.post("/users/login", async (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
   //generate JWT tokens
-  const accessToken = createAceessToken(user);
+  const accessToken = createAccessToken(user);
   const refreshToken = createRefreshToken(user);
-
   //respond with tokens
   return res.status(200).json({ accessToken, refreshToken });
 });
@@ -85,8 +84,23 @@ app.get("/me", async(req, res) => {
   }
 });
 
+//refresh token endpoint
+app.post("/refresh", async(req, res) => {
+  const token = req.body.token;
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  try {
+    const user = jwt.verify(token, REFRESH_SECRET);
+    const newAccessToken = createAccessToken(user);
+    return res.status(200).json({newAccessToken});
+  } catch (err) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+});
+
 /*################################################################################*/
-function createAceessToken(user) {
+function createAccessToken(user) {
   return jwt.sign({ email: user.email }, ACCESS_SECRET, { expiresIn: "15m" });
 }
 function createRefreshToken(user) {
