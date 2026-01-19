@@ -12,3 +12,23 @@ exports.registerUser=async(email,password)=>{
     const hashedPassword=await hashPassword(password);
     return userRepo.create(email,hashedPassword);
 }
+
+//login user
+exports.loginUser = async (email, password) => {
+  const user = userRepo.findEmail(email);
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
+
+  const isCorrect = await comparePassword(password, user.password);
+  if (!isCorrect) {
+    throw new Error("Invalid credentials");
+  }
+
+  return {
+    accessToken: createAccessToken(user),
+    refreshToken: createRefreshToken(user),
+  };
+};
+
+
