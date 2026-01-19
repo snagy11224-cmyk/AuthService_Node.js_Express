@@ -40,4 +40,21 @@ exports.getProfile = async (decodedUser) => {
   return user;
 };
 
+//refresh token
+exports.refreshToken = async (token) => {
+  if (!token) {
+    throw new Error("No token provided");
+  }
+  
+  const decoded = verifyRefreshToken(token);
+
+  const user = userRepo.findEmail(decoded.email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return createAccessToken(user);
+};
+
+
 

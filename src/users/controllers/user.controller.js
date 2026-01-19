@@ -32,4 +32,15 @@ exports.me = async (req, res) => {
   }
 };
 
+exports.refresh = async (req, res) => {
+  const { token } = req.body;
+  try {
+    const accessToken = await userService.refreshToken(token);
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+};
+
+
 
