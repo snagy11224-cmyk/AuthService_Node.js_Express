@@ -3,6 +3,8 @@ const userRouter = require("./app/users/routes");
 const ErrorHandler = require("./app/common/error/errorHandler"); 
 const correlationId = require("./app/common/correlation/correlationId");
 const requestTimeMiddleware = require("./app/common/logger/requestTimeHelper");
+const dotenv = require("dotenv");
+dotenv.config(); // to be able to config .env vars using 'process.env.VAR_NAME'
 
 const app= express();
 app.use(express.json()); 
